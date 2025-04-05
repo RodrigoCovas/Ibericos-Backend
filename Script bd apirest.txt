@@ -1,0 +1,167 @@
+#IMPORTANTE incluir esta linea
+from auctions.models import Category,Auction
+from django.utils import timezone
+from datetime import timedelta
+
+#Query 1: Añadir elementos a la BD
+# Creamos 3 categorias de ejemplo
+category_smartphones = Category.objects.create(name='smartphones')
+category_laptops = Category.objects.create(name='laptops')
+category_beauty = Category.objects.create(name='beauty')
+
+
+#Declaramos una array con 10 elementos de ejemplo de subastas.
+#Cada subasta tendrá una referencia a una de las 3 categorías creadas en el paso anterior.
+data = [
+    {
+            "id": 1,
+            "title": "iPhone 9",
+            "description": "An apple mobile which is nothing like apple",
+            "price": 549,
+            "rating": 4.69,
+            "stock": 94,
+            "brand": "Apple",
+            "category": category_smartphones,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/smartphones/iPhone%206/thumbnail.png"
+        },
+        {
+            "id": 2,
+            "title": "iPhone X",
+            "description": "SIM-Free, Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with ...",
+            "price": 899,
+            "rating": 4.44,
+            "stock": 34,
+            "brand": "Apple",
+            "category": category_smartphones,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/smartphones/iPhone%20X/thumbnail.png"
+        },
+        {
+            "id": 3,
+            "title": "Samsung Galaxy S7",
+            "description": "The Samsung Galaxy S7 is a flagship smartphone known for its sleek design and advanced features. It features a high-resolution display, powerful camera, and robust performance.",
+            "price": 1249,
+            "rating": 4.09,
+            "stock": 36,
+            "brand": "Samsung",
+            "category": category_smartphones,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/smartphones/Samsung%20Galaxy%20S7/thumbnail.png"
+        },
+        {
+            "id": 4,
+			"title": "Samsung Galaxy S10",
+            "description": "The Samsung Galaxy S10 is a flagship device featuring a dynamic AMOLED display, versatile camera system, and powerful performance. It represents innovation and excellence in smartphone technology.",
+            "price": 699.99,
+            "rating": 4.3,
+            "stock": 123,
+            "brand": "Samsung",
+            "category": category_smartphones,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/smartphones/Samsung%20Galaxy%20S10/thumbnail.png"
+        },
+        {
+            "id": 5,
+            "title": "Huawei Matebook X Pro",
+            "description": "The Huawei Matebook X Pro is a slim and stylish laptop with a high-resolution touchscreen display, offering a premium experience for users on the go.",
+			"price": 1399.99,
+            "rating": 4.09,
+            "stock": 32,
+            "brand": "Huawei",
+            "category": category_smartphones,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/laptops/Huawei%20Matebook%20X%20Pro/thumbnail.png"
+        },
+        {
+            "id": 6,
+            "title": "MacBook Pro",
+            "description": "MacBook Pro 2021 with mini-LED display may launch between September, November",
+            "price": 1749,
+            "rating": 4.57,
+            "stock": 83,
+            "brand": "Apple",
+            "category": category_laptops,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/laptops/Apple%20MacBook%20Pro%2014%20Inch%20Space%20Grey/thumbnail.png"
+        },
+        {
+            "id": 7,
+            "title": "Samsung Galaxy S8",
+            "description": "The Samsung Galaxy S8 is a premium smartphone with an Infinity Display, offering a stunning visual experience. It boasts advanced camera capabilities and cutting-edge technology.",
+            "price": 499,
+            "rating": 4.25,
+            "stock": 50,
+            "brand": "Samsung",
+            "category": category_laptops,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/smartphones/Samsung%20Galaxy%20S8/thumbnail.png"
+        },
+        {
+            "id": 8,
+            "title": "Lenovo Yoga 920",
+            "description": "The Lenovo Yoga 920 is a 2-in-1 convertible laptop with a flexible hinge, allowing you to use it as a laptop or tablet, offering versatility and portability.",
+			"price": 1499,
+            "rating": 4.43,
+            "stock": 68,
+            "brand": "Lenovo",
+            "category": category_laptops,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/laptops/Lenovo%20Yoga%20920/thumbnail.png"
+        },
+        {
+            "id": 9,
+            "title": "New DELL XPS 13 9300 Laptop",
+            "description": "The New DELL XPS 13 9300 Laptop is a compact and powerful device, featuring a virtually borderless InfinityEdge display and high-end performance for various tasks.",
+            "price": 1499,
+            "rating": 4.54,
+            "stock": 96,
+            "brand": "Dell",
+            "category": category_laptops,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/laptops/New%20DELL%20XPS%2013%209300%20Laptop/thumbnail.png"
+        },
+        {
+            "id": 10,
+            "title": "Red Nail Polish",
+            "description": "The Red Nail Polish offers a rich and glossy red hue for vibrant and polished nails. With a quick-drying formula, it provides a salon-quality finish at home.",
+            "price": 8.99,
+            "rating": 4.43,
+            "stock": 89,
+            "brand": "Nail Couture",
+            "category": category_beauty,
+            "thumbnail": "https://cdn.dummyjson.com/products/images/beauty/Red%20Nail%20Polish/thumbnail.png"
+        }
+]
+
+#Imprimimos el tamaño del array para validar que se ha creado bien
+print(len(data))
+
+#Para cada ejemplo, cremaos un nuevo objeto Subasta y lo guardamos en BD.
+for item in data:
+    auction = Auction(
+        id=item["id"],
+        title=item["title"],
+        description=item["description"],
+        price=item["price"],
+        rating=item["rating"],
+        stock=item["stock"],
+        brand=item["brand"],
+        category=item["category"],
+        thumbnail=item["thumbnail"],
+		closing_date = timezone.now() + timedelta(days=30) 
+    )
+    auction.save()
+
+#Query 2: Listar todos los elementos de Categorias 
+Category.objects.all()  
+
+#Query 3: Listar todos los elementos de Subastas 
+Auction.objects.all()  
+
+#Query 4: Obtener una subasta por id
+a = Auction.objects.get(id=1)  
+
+#Query 5: Consultar los valores de una subasta
+print(a.__dict__)
+
+#Query 6: Filtrar por una propiedad de subasta
+Auction.objects.filter(price__gte=1000) 
+
+#Query 7: Obtener una categoría y consultar su relacion de subastas
+categ = Category.objects.get(id=1)  
+print(categ.auctions.all())
+
+#Para salir de la Shell
+exit()
