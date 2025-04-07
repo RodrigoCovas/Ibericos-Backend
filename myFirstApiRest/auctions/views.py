@@ -8,6 +8,7 @@ from .serializers import (
     BidListCreateSerializer,
     BidDetailSerializer,
 )
+from django.db.models import Q
 
 
 class CategoryListCreate(generics.ListCreateAPIView):
@@ -21,8 +22,15 @@ class CategoryRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AuctionListCreate(generics.ListCreateAPIView):
-    queryset = Auction.objects.all()
     serializer_class = AuctionListCreateSerializer
+
+    def get_queryset(self): 
+        queryset = Auction.objects.all() 
+        params = self.request.query_params 
+        search = params.get('search', None) 
+        if search: 
+            queryset = queryset.filter(Q(title__icontains=search) | Q(description__icontains=search)) 
+        return queryset 
 
 
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
