@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-kzhw3wirse)71g=-qose)yhdtpx62c%kt@jk^wpnz-e7q_xtjh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-cvqiodh5pdvs73aedvcg-a.oregon-postgres.render.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-cvqiodh5pdvs73aedvcg-a.oregon-postgres.render.com', 'ibericos-backend.onrender.com']
 
 
 # Application definition
