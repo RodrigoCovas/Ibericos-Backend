@@ -1,5 +1,7 @@
+from decimal import Decimal
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from users.models import CustomUser
 
 
 class Category(models.Model):
@@ -19,9 +21,9 @@ class Auction(models.Model):
     rating = models.DecimalField(
         max_digits=3,
         decimal_places=2,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        validators=[MinValueValidator(Decimal("1.00")), MaxValueValidator(Decimal("5.00"))],
     )
-    stock = models.IntegerField(validators=[MinValueValidator(1)])
+    stock = models.IntegerField(validators=[MinValueValidator(1.00)])
     brand = models.CharField(max_length=100)
     category = models.ForeignKey(
         Category, related_name="auctions", on_delete=models.CASCADE
@@ -29,6 +31,7 @@ class Auction(models.Model):
     thumbnail = models.URLField()
     creation_date = models.DateTimeField(auto_now_add=True)
     closing_date = models.DateTimeField()
+    auctioneer = models.ForeignKey(CustomUser, related_name='auctions', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ("id",)
