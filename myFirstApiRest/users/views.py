@@ -36,7 +36,7 @@ class UserRegisterView(generics.CreateAPIView):
 
 
 class UserListView(generics.ListAPIView):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
 
@@ -105,3 +105,13 @@ class ChangePasswordView(APIView):
             return Response({"detail": "Password updated successfully."})
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class GetUsernameByIdView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id):
+        try:
+            # Fetch the user object by ID
+            user = CustomUser.objects.get(id=user_id)
+            return Response({"username": user.username}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -12,6 +12,17 @@ class UserSerializer(serializers.ModelSerializer):
         if CustomUser.objects.filter(email=value).exclude(pk=user.pk if user else None).exists():
             raise serializers.ValidationError("Email already in used.")
         return value
+    
+    def validate_username(self, value):
+        user = self.instance
+        if CustomUser.objects.filter(username=value).exclude(pk=user.pk if user else None).exists():
+            raise serializers.ValidationError("Username already in used.")
+        return value
+    
+    def validate_password(self, value):
+        if len(value) < 8 or not any(char.isdigit() for char in value) or not any(char.isalpha() for char in value):
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
+        return value
         
     def create(self, validated_data):
         return CustomUser.objects.create_user(**validated_data)
