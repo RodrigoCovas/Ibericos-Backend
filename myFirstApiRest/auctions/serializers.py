@@ -15,9 +15,10 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AuctionListCreateSerializer(serializers.ModelSerializer):
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
+    auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Auction
@@ -26,15 +27,18 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
         return obj.closing_date > timezone.now()
-    
+
     def validate_closing_date(self, value):
+        # Ensure closing date is greater than now
         if value <= timezone.now():
             raise serializers.ValidationError("Closing date must be greater than now.")
         
-        if value - timezone.now() > timedelta(days=15):
+        # Ensure closing date is at least 15 days after now
+        if value - timezone.now() < timedelta(days=15):
             raise serializers.ValidationError("Closing date must be at least 15 days after creation date.")
 
         return value
+
 
 
 class AuctionDetailSerializer(serializers.ModelSerializer):
@@ -61,7 +65,7 @@ class BidListCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Bid
-        fields = ['id', 'auction', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction_id', 'price', 'creation_date', 'bidder']
 
 class BidDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
@@ -69,4 +73,4 @@ class BidDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bid
-        fields = ['id', 'auction', 'auction_title', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction_id', 'auction_title', 'price', 'creation_date', 'bidder']
