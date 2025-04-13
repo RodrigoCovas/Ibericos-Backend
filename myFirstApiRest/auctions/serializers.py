@@ -65,7 +65,7 @@ class BidListCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Bid
-        fields = ['id', 'auction', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction_id', 'price', 'creation_date', 'bidder']
 
 class BidDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
@@ -73,4 +73,4 @@ class BidDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bid
-        fields = ['id', 'auction', 'auction_title', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction_id', 'auction_title', 'price', 'creation_date', 'bidder']

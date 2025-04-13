@@ -49,6 +49,7 @@ class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BidListCreate(generics.ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
     serializer_class = BidListCreateSerializer
 
     def get_queryset(self):
@@ -58,13 +59,17 @@ class BidListCreate(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         auction_id = self.kwargs["auction_id"]
         serializer.save(auction_id=auction_id)
+        #serializer.save(auction_id=auction_id, bidder=self.request.user)
+
 
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Bid.objects.all()
     serializer_class = BidDetailSerializer
 
     def get_queryset(self):
+
         auction_id = self.kwargs["auction_id"]
         return super().get_queryset().filter(auction_id=auction_id)
 

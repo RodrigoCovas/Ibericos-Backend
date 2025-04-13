@@ -47,7 +47,7 @@ class Bid(models.Model):
     bidder = models.CharField(max_length=100)
 
     class Meta:
-        ordering = ("id",)
+        ordering = ("price",)
 
     def __str__(self):
         return f"Bid {self.id} for Auction {self.auction.title}"
