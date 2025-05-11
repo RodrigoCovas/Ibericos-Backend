@@ -7,6 +7,8 @@ from .views import (
     BidListCreate,
     BidRetrieveUpdateDestroy,
     UserAuctionListView,
+    RatingListCreateView, 
+    RatingRetrieveUpdateDestroy,
 )
 
 app_name = "auctions"
@@ -22,4 +24,7 @@ urlpatterns = [
     path("<int:auction_id>/bid/", BidListCreate.as_view(), name='bid-list-create'),
     path("<int:auction_id>/bid/<int:pk>/", BidRetrieveUpdateDestroy.as_view(), name='bid-retrieve-update-destroy'),
     path('users/', UserAuctionListView.as_view(), name='action-from-users'),
+    path('<int:auction_id>/ratings/', RatingListCreateView.as_view(), name='rating-list-create'),
+    path('<int:auction_id>/my_rating/', RatingRetrieveUpdateDestroy.as_view(), name='my-rating-auction'),
 ]
+

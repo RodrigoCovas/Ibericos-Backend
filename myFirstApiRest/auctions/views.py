@@ -1,5 +1,5 @@
 from rest_framework import generics
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from .serializers import (
     CategoryListCreateSerializer,
     CategoryDetailSerializer,
@@ -7,11 +7,14 @@ from .serializers import (
     AuctionDetailSerializer,
     BidListCreateSerializer,
     BidDetailSerializer,
+    RatingListCreateSerializer, 
+    RatingDetailSerializer,
 )
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import NotFound
 from .permissions import IsOwnerOrAdmin
 
 
@@ -49,18 +52,15 @@ class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BidListCreate(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticated]
     serializer_class = BidListCreateSerializer
 
     def get_queryset(self):
         auction_id = self.kwargs["auction_id"]
-        return Bid.objects.filter(auction_id=auction_id)
+        return Bid.objects.filter(auction_id=auction_id).order_by('-price')
 
     def perform_create(self, serializer):
         auction_id = self.kwargs["auction_id"]
         serializer.save(auction_id=auction_id)
-        #serializer.save(auction_id=auction_id, bidder=self.request.user)
-
 
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -69,7 +69,6 @@ class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BidDetailSerializer
 
     def get_queryset(self):
-
         auction_id = self.kwargs["auction_id"]
         return super().get_queryset().filter(auction_id=auction_id)
 
@@ -81,3 +80,43 @@ class UserAuctionListView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user)
         serializer = AuctionListCreateSerializer(user_auctions, many=True)
         return Response(serializer.data)
+    
+class RatingListCreateView(generics.ListCreateAPIView):
+    serializer_class = RatingListCreateSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_queryset(self):
+        auction_id = self.kwargs['auction_id']
+        return Rating.objects.filter(auction_id=auction_id)
+
+    def perform_create(self, serializer):
+        auction_id = self.kwargs['auction_id']
+        auction = Auction.objects.get(pk=auction_id)
+        serializer.save(user=self.request.user, auction=auction)
+
+class RatingRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = RatingDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        auction_id = self.kwargs['auction_id']
+        return Rating.objects.filter(auction_id=auction_id, user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().first()
+        if not obj:
+            return Response({
+                "value": None
+            })
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+
+    def get_object(self):
+        obj = self.get_queryset().first()
+        if not obj:
+            raise NotFound("No has valorado esta subasta.")
+        return obj
