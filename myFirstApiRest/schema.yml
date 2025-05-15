@@ -52,9 +52,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuctionListCreate'
           description: ''
-  /api/auctions/{auction_id}/bid/:
+  /api/auctions/{auction_id}/bids/:
     get:
-      operationId: auctions_bid_list
+      operationId: auctions_bids_list
       parameters:
       - in: path
         name: auction_id
@@ -80,7 +80,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedBidListCreateList'
           description: ''
     post:
-      operationId: auctions_bid_create
+      operationId: auctions_bids_create
       parameters:
       - in: path
         name: auction_id
@@ -103,7 +103,6 @@ paths:
         required: true
       security:
       - jwtAuth: []
-      - {}
       responses:
         '201':
           content:
@@ -111,17 +110,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/BidListCreate'
           description: ''
-  /api/auctions/{auction_id}/bid/{id}/:
+  /api/auctions/{auction_id}/comments/:
     get:
-      operationId: auctions_bid_retrieve
+      operationId: auctions_comments_list
       parameters:
       - in: path
         name: auction_id
         schema:
           type: integer
         required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommentListCreateList'
+          description: ''
+    post:
+      operationId: auctions_comments_create
+      parameters:
       - in: path
-        name: id
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentListCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentListCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentListCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentListCreate'
+          description: ''
+  /api/auctions/{auction_id}/my_bid/:
+    get:
+      operationId: auctions_my_bid_retrieve
+      parameters:
+      - in: path
+        name: auction_id
         schema:
           type: integer
         required: true
@@ -137,15 +189,10 @@ paths:
                 $ref: '#/components/schemas/BidDetail'
           description: ''
     put:
-      operationId: auctions_bid_update
+      operationId: auctions_my_bid_update
       parameters:
       - in: path
         name: auction_id
-        schema:
-          type: integer
-        required: true
-      - in: path
-        name: id
         schema:
           type: integer
         required: true
@@ -173,15 +220,10 @@ paths:
                 $ref: '#/components/schemas/BidDetail'
           description: ''
     patch:
-      operationId: auctions_bid_partial_update
+      operationId: auctions_my_bid_partial_update
       parameters:
       - in: path
         name: auction_id
-        schema:
-          type: integer
-        required: true
-      - in: path
-        name: id
         schema:
           type: integer
         required: true
@@ -208,15 +250,10 @@ paths:
                 $ref: '#/components/schemas/BidDetail'
           description: ''
     delete:
-      operationId: auctions_bid_destroy
+      operationId: auctions_my_bid_destroy
       parameters:
       - in: path
         name: auction_id
-        schema:
-          type: integer
-        required: true
-      - in: path
-        name: id
         schema:
           type: integer
         required: true
@@ -227,6 +264,254 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/auctions/{auction_id}/my_comment/:
+    get:
+      operationId: auctions_my_comment_retrieve
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentDetail'
+          description: ''
+    put:
+      operationId: auctions_my_comment_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentDetail'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentDetail'
+          description: ''
+    patch:
+      operationId: auctions_my_comment_partial_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentDetail'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentDetail'
+          description: ''
+    delete:
+      operationId: auctions_my_comment_destroy
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auctions/{auction_id}/my_rating/:
+    get:
+      operationId: auctions_my_rating_retrieve
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingDetail'
+          description: ''
+    put:
+      operationId: auctions_my_rating_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RatingDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RatingDetail'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingDetail'
+          description: ''
+    patch:
+      operationId: auctions_my_rating_partial_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRatingDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRatingDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRatingDetail'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingDetail'
+          description: ''
+    delete:
+      operationId: auctions_my_rating_destroy
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auctions/{auction_id}/ratings/:
+    get:
+      operationId: auctions_ratings_list
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRatingListCreateList'
+          description: ''
+    post:
+      operationId: auctions_ratings_create
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingListCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RatingListCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RatingListCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingListCreate'
+          description: ''
   /api/auctions/{id}/:
     get:
       operationId: auctions_retrieve
@@ -471,9 +756,19 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/auctions/users/:
+  /api/auctions/user_auctions/:
     get:
-      operationId: auctions_users_retrieve
+      operationId: auctions_user_auctions_retrieve
+      tags:
+      - auctions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auctions/user_bids/:
+    get:
+      operationId: auctions_user_bids_retrieve
       tags:
       - auctions
       security:
@@ -763,6 +1058,9 @@ components:
         isOpen:
           type: boolean
           readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
         title:
           type: string
           maxLength: 150
@@ -772,14 +1070,11 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
-        rating:
-          type: string
-          format: decimal
-          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
         stock:
           type: integer
-          maximum: 2147483647
-          minimum: 1.0
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
         brand:
           type: string
           maxLength: 100
@@ -793,6 +1088,7 @@ components:
           type: integer
       required:
       - auctioneer
+      - average_rating
       - brand
       - category
       - closing_date
@@ -801,7 +1097,6 @@ components:
       - id
       - isOpen
       - price
-      - rating
       - stock
       - thumbnail
       - title
@@ -824,6 +1119,9 @@ components:
         auctioneer:
           type: integer
           readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
         title:
           type: string
           maxLength: 150
@@ -833,14 +1131,11 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
-        rating:
-          type: string
-          format: decimal
-          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
         stock:
           type: integer
-          maximum: 2147483647
-          minimum: 1.0
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
         brand:
           type: string
           maxLength: 100
@@ -852,6 +1147,7 @@ components:
           type: integer
       required:
       - auctioneer
+      - average_rating
       - brand
       - category
       - closing_date
@@ -860,7 +1156,6 @@ components:
       - id
       - isOpen
       - price
-      - rating
       - stock
       - thumbnail
       - title
@@ -870,11 +1165,8 @@ components:
         id:
           type: integer
           readOnly: true
-        auction_id:
+        auction:
           type: integer
-          readOnly: true
-        auction_title:
-          type: string
           readOnly: true
         price:
           type: string
@@ -886,10 +1178,9 @@ components:
           readOnly: true
         bidder:
           type: string
-          maxLength: 100
+          readOnly: true
       required:
-      - auction_id
-      - auction_title
+      - auction
       - bidder
       - creation_date
       - id
@@ -900,9 +1191,8 @@ components:
         id:
           type: integer
           readOnly: true
-        auction_id:
+        auction:
           type: integer
-          readOnly: true
         price:
           type: string
           format: decimal
@@ -913,9 +1203,8 @@ components:
           readOnly: true
         bidder:
           type: string
-          maxLength: 100
+          readOnly: true
       required:
-      - auction_id
       - bidder
       - creation_date
       - id
@@ -944,6 +1233,68 @@ components:
       required:
       - id
       - name
+    CommentDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        text:
+          type: string
+        creation_date:
+          type: string
+          format: date-time
+          readOnly: true
+        edit_date:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: string
+          readOnly: true
+        auction:
+          type: integer
+          readOnly: true
+      required:
+      - auction
+      - creation_date
+      - edit_date
+      - id
+      - text
+      - title
+      - user
+    CommentListCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        text:
+          type: string
+        creation_date:
+          type: string
+          format: date-time
+          readOnly: true
+        edit_date:
+          type: string
+          format: date-time
+          readOnly: true
+        auction:
+          type: integer
+        user:
+          type: string
+          readOnly: true
+      required:
+      - creation_date
+      - edit_date
+      - id
+      - text
+      - title
+      - user
     PaginatedAuctionListCreateList:
       type: object
       required:
@@ -1013,6 +1364,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CategoryListCreate'
+    PaginatedCommentListCreateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentListCreate'
+    PaginatedRatingListCreateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RatingListCreate'
     PaginatedUserList:
       type: object
       required:
@@ -1052,6 +1449,9 @@ components:
         isOpen:
           type: boolean
           readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
         title:
           type: string
           maxLength: 150
@@ -1061,14 +1461,11 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
-        rating:
-          type: string
-          format: decimal
-          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
         stock:
           type: integer
-          maximum: 2147483647
-          minimum: 1.0
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
         brand:
           type: string
           maxLength: 100
@@ -1086,11 +1483,8 @@ components:
         id:
           type: integer
           readOnly: true
-        auction_id:
+        auction:
           type: integer
-          readOnly: true
-        auction_title:
-          type: string
           readOnly: true
         price:
           type: string
@@ -1102,7 +1496,7 @@ components:
           readOnly: true
         bidder:
           type: string
-          maxLength: 100
+          readOnly: true
     PatchedCategoryDetail:
       type: object
       properties:
@@ -1112,6 +1506,46 @@ components:
         name:
           type: string
           maxLength: 50
+    PatchedCommentDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        text:
+          type: string
+        creation_date:
+          type: string
+          format: date-time
+          readOnly: true
+        edit_date:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: string
+          readOnly: true
+        auction:
+          type: integer
+          readOnly: true
+    PatchedRatingDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: integer
+          maximum: 5
+          minimum: 1
+        user:
+          type: string
+          readOnly: true
+        auction:
+          type: integer
+          readOnly: true
     PatchedUser:
       type: object
       properties:
@@ -1148,6 +1582,44 @@ components:
           type: string
           writeOnly: true
           maxLength: 128
+    RatingDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: integer
+          maximum: 5
+          minimum: 1
+        user:
+          type: string
+          readOnly: true
+        auction:
+          type: integer
+          readOnly: true
+      required:
+      - auction
+      - id
+      - user
+    RatingListCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: integer
+          maximum: 5
+          minimum: 1
+        auction:
+          type: integer
+        user:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - user
     TokenObtainPair:
       type: object
       properties:

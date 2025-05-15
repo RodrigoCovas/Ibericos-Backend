@@ -69,7 +69,7 @@ class BidListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         auction_id = self.kwargs['auction_id']
-        return Bid.objects.filter(auction_id=auction_id)
+        return Bid.objects.filter(auction_id=auction_id).order_by('-price')
 
     def perform_create(self, serializer):
         auction_id = self.kwargs['auction_id']
@@ -82,7 +82,7 @@ class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         auction_id = self.kwargs['auction_id']
-        return Bid.objects.filter(auction_id=auction_id, bidder=self.request.user)
+        return Bid.objects.filter(auction_id=auction_id, bidder=self.request.user).order_by('-price')
 
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().first()
