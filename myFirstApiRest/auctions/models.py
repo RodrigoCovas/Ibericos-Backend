@@ -42,6 +42,7 @@ class Bid(models.Model):
     bidder = models.ForeignKey(CustomUser, related_name='bids', on_delete=models.CASCADE)
 
     class Meta:
+        unique_together = ('bidder', 'auction')  # Un usuario solo puede pujar una vez en cada subasta
         ordering = ('price',)
 
     def __str__(self):

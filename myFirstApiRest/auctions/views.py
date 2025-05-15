@@ -62,22 +62,42 @@ class UserAuctionListView(APIView):
 class BidListCreate(generics.ListCreateAPIView):
     serializer_class = BidListCreateSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def get_queryset(self):
-        auction_id = self.kwargs["auction_id"]
-        return Bid.objects.filter(auction_id=auction_id).order_by('-price')
+        auction_id = self.kwargs['auction_id']
+        return Bid.objects.filter(auction_id=auction_id)
 
     def perform_create(self, serializer):
-        auction_id = self.kwargs["auction_id"]
-        serializer.save(auction_id=auction_id)
+        auction_id = self.kwargs['auction_id']
+        auction = Auction.objects.get(pk=auction_id)
+        serializer.save(bidder=self.request.user, auction=auction)
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Bid.objects.all()
     serializer_class = BidDetailSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        auction_id = self.kwargs["auction_id"]
-        return super().get_queryset().filter(auction_id=auction_id)
+        auction_id = self.kwargs['auction_id']
+        return Bid.objects.filter(auction_id=auction_id, bidder=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().first()
+        if not obj:
+            return Response({
+                "price": None
+            })
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+
+    def get_object(self):
+        obj = self.get_queryset().first()
+        if not obj:
+            raise NotFound("No has pujado en esta subasta.")
+        return obj
     
 class UserBidListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -157,7 +177,7 @@ class CommentRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         obj = self.get_queryset().first()
         if not obj:
             return Response({
-                "value": None
+                "text": None
             })
         serializer = self.get_serializer(obj)
         return Response(serializer.data)

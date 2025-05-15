@@ -74,22 +74,24 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             return round(sum(r.value for r in ratings) / ratings.count(), 2)
         return 1.0
     
-    
 class BidListCreateSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
-    auction = serializers.PrimaryKeyRelatedField(read_only=True)
+    bidder = serializers.StringRelatedField(read_only=True)
+    # auction = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Bid
         fields = ['id', 'auction', 'price', 'creation_date', 'bidder']
+        extra_kwargs = {'auction': {'required': False}}
 
 class BidDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
-    auction_title = serializers.ReadOnlyField(source='auction.title')
+    bidder = serializers.StringRelatedField(read_only=True)
+    auction = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Bid
-        fields = ['id', 'auction', 'auction_title', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction', 'price', 'creation_date', 'bidder']
 
 class RatingListCreateSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
