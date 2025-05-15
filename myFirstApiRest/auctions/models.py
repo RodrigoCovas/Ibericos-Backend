@@ -39,7 +39,7 @@ class Bid(models.Model):
     auction = models.ForeignKey(Auction, related_name="bids", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     creation_date = models.DateTimeField(auto_now_add=True)
-    bidder = models.CharField(max_length=100)
+    bidder = models.ForeignKey(CustomUser, related_name='bids', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('price',)
@@ -61,3 +61,18 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'Rating {self.value} by {self.user} for {self.auction}'
+    
+class Comment(models.Model):
+    title = models.TextField()
+    text = models.TextField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    edit_date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='comments')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='comments')
+
+    class Meta:
+        unique_together = ('user', 'auction')  # Un usuario solo puede comentar una vez en cada subasta
+        ordering = ('id',)
+
+    def __str__(self):
+        return f'Comment by {self.user} for {self.auction}'

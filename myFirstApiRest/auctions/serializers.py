@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Auction, Bid, Rating
+from .models import Category, Auction, Bid, Rating, Comment
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from datetime import timedelta
@@ -77,10 +77,11 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     
 class BidListCreateSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    auction = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Bid
-        fields = ['id', 'auction_id', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction', 'price', 'creation_date', 'bidder']
 
 class BidDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
@@ -88,7 +89,7 @@ class BidDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bid
-        fields = ['id', 'auction_id', 'auction_title', 'price', 'creation_date', 'bidder']
+        fields = ['id', 'auction', 'auction_title', 'price', 'creation_date', 'bidder']
 
 class RatingListCreateSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
@@ -110,3 +111,24 @@ class RatingDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ['id', 'value', 'user', 'auction']
+
+class CommentListCreateSerializer(serializers.ModelSerializer):
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    edit_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'text', 'creation_date', 'edit_date', 'auction', 'user']
+        extra_kwargs = {'auction': {'required': False}}
+
+
+class CommentDetailSerializer(serializers.ModelSerializer):
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    edit_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+    auction = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'text', 'creation_date', 'edit_date', 'user', 'auction']
