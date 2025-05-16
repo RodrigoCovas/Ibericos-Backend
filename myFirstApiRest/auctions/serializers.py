@@ -20,6 +20,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField(read_only=True)
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
+    last_call = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Auction
@@ -45,6 +46,11 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         if ratings.exists():
             return round(sum(r.value for r in ratings) / ratings.count(), 2)
         return 1.0
+    
+    def get_last_call(self, obj):
+        #return not obj.bids.all().exists()
+        tr = obj.closing_date - timezone.now()
+        return tr < timedelta(hours=1) and not obj.bids.all().exists()
 
 
 
