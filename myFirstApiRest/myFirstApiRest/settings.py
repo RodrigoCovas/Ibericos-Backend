@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-kzhw3wirse)71g=-qose)yhdtpx62c%kt@jk^wpnz-e7q_xtjh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-cvqiodh5pdvs73aedvcg-a.oregon-postgres.render.com', 'ibericos-backend.onrender.com', 'ibericos.vercel.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-d0jeaem3jp1c739r26j0-a.oregon-postgres.render.com', 'ibericos-backend.onrender.com', 'ibericos.vercel.app']
 
 
 # Application definition
@@ -112,15 +112,15 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 load_dotenv()
-# DATABASES = {
-#     'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
-# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
